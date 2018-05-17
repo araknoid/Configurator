@@ -8,6 +8,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/configurations")
 public class ConfigurationController {
 
     private ConfigurationService configurationRepository;
@@ -16,8 +17,8 @@ public class ConfigurationController {
         this.configurationRepository = configurationRepository;
     }
 
-    @GetMapping("/configurations/{name}")
-    private Configuration getConfigurationByName(@PathVariable String name) {
+    @GetMapping
+    private Configuration getConfigurationByName(@RequestParam String name) {
         return configurationRepository.getConfigurationByName(name);
     }
 

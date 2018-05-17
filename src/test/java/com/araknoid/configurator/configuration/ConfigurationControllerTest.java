@@ -31,13 +31,14 @@ public class ConfigurationControllerTest {
 
     @Test
     public void whenRetrievingConfiguration_thenItShouldReturnConfigurationNameAndValue() throws Exception {
+        Configuration configuration = new Configuration("server.port", "8080");
         given(configurationService.getConfigurationByName(anyString()))
-                .willReturn(new Configuration("server.port", "8080"));
+                .willReturn(configuration);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/configurations/server.port"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/configurations?name=server.port"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("name").value("server.port"))
-                .andExpect(jsonPath("value").value("8080"));
+                .andExpect(jsonPath("name").value(configuration.getName()))
+                .andExpect(jsonPath("value").value(configuration.getValue()));
     }
 
     @Test
@@ -45,7 +46,7 @@ public class ConfigurationControllerTest {
         given(configurationService.getConfigurationByName(anyString()))
                 .willThrow(new ConfigurationNotFoundException());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/configurations/server.port"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/configurations?name=server.port"))
                 .andExpect(status().isNotFound());
     }
 

@@ -25,13 +25,14 @@ public class IntegrationTest {
 
     @Test
     public void whenRetrievingConfiguration_thenItShouldReturnConfigurationNameAndValue() {
-        configurationRepository.save(new Configuration("server.port", "8080"));
+        Configuration configuration = new Configuration("server.port", "8080");
+        configurationRepository.save(configuration);
 
-        ResponseEntity<Configuration> response = restTemplate.getForEntity("/configurations/{name}", Configuration.class, "server.port");
+        ResponseEntity<Configuration> response = restTemplate.getForEntity("/configurations?name={name}", Configuration.class, "server.port");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getName()).isEqualTo("server.port");
-        assertThat(response.getBody().getValue()).isEqualTo("8080");
+        assertThat(response.getBody().getName()).isEqualTo(configuration.getName());
+        assertThat(response.getBody().getValue()).isEqualTo(configuration.getValue());
     }
 
     @Test
