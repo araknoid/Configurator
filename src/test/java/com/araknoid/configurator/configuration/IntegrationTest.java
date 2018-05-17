@@ -34,6 +34,14 @@ public class IntegrationTest {
         assertThat(response.getBody().getValue()).isEqualTo("8080");
     }
 
+    @Test
+    public void givenConfiguration_whenSavingNewConfiguration_thenSaved() {
+        ResponseEntity<Configuration> postResponse = restTemplate.postForEntity("/configurations", new Configuration("project", "configurator"), Configuration.class);
+
+        assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(postResponse.getHeaders().getLocation()).isNotNull();
+    }
+
     @After
     public void tearDown() {
         configurationRepository.deleteAll();

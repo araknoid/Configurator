@@ -14,4 +14,8 @@ public class ConfigurationService {
     public Configuration getConfigurationByName(String name) {
         return configurationRepository.findByName(name).orElseThrow(() -> new ConfigurationNotFoundException());
     }
+
+    public Configuration saveConfiguration(Configuration configuration) {
+        return configurationRepository.save(configuration);
+    }
 }

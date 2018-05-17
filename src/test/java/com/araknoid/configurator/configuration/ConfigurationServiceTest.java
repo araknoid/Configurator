@@ -44,4 +44,17 @@ public class ConfigurationServiceTest {
 
     }
 
+    @Test
+    public void whenSavingNewConfiguration_thenSavedConfigurationIsReturned() {
+        Configuration configuration = new Configuration("project", "configurator");
+
+        given(configurationRepository.save(configuration))
+                .willReturn(configuration);
+
+        Configuration savedConfiguration = configurationService.saveConfiguration(configuration);
+
+        assertThat(savedConfiguration.getName()).isEqualTo(configuration.getName());
+        assertThat(savedConfiguration.getValue()).isEqualTo(configuration.getValue());
+    }
+
 }
