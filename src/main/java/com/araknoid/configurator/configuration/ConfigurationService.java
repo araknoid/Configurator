@@ -18,4 +18,8 @@ public class ConfigurationService {
     public Configuration saveConfiguration(Configuration configuration) {
         return configurationRepository.save(configuration);
     }
+
+    public void deleteConfigurationById(Long configurationId) {
+        configurationRepository.deleteById(configurationId);
+    }
 }

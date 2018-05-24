@@ -11,9 +11,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.persistence.EntityNotFoundException;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -65,5 +69,24 @@ public class ConfigurationControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
+    }
+
+    @Test
+    public void givenConfigurationId_whenDeletingConfiguration_thenDeleted() throws Exception {
+
+        doNothing().when(configurationService).deleteConfigurationById(anyLong());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/configurations/{id}", 1L))
+                .andExpect(status().isNoContent());
+
+        verify(configurationService, times(1)).deleteConfigurationById(anyLong());
+    }
+
+    @Test
+    public void givenConfigurationIdThatDoesNotExists_whenDeletingConfiguration_then() throws Exception {
+        doThrow(EntityNotFoundException.class).when(configurationService).deleteConfigurationById(anyLong());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/configurations/{id}", 1L))
+                .andExpect(status().isNotFound());
     }
 }
