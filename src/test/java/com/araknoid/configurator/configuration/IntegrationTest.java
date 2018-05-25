@@ -49,16 +49,31 @@ public class IntegrationTest {
     @Test
     public void givenConfiguration_whenDeletingConfiguration_thenDeleted() {
         Configuration configuration = new Configuration("server.port", "8080");
-        configurationRepository.save(configuration);
+        Configuration savedConfiguration = configurationRepository.save(configuration);
 
         UriComponents deleteURI = UriComponentsBuilder.fromUriString("/configurations/{id}")
-                .buildAndExpand(1L);
+                .buildAndExpand(savedConfiguration.getId());
 
         RequestEntity<Void> deleteRequest = RequestEntity.delete(deleteURI.toUri()).build();
 
         ResponseEntity<Void> deleteResponse = restTemplate.exchange(deleteRequest, Void.class);
 
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
+    @Test
+    public void whenRetrievingConfigurationByID_thenItShouldReturnConfigurationNameAndValue() {
+        Configuration configuration = new Configuration("server.name", "localhost");
+        Configuration savedConfiguration = configurationRepository.save(configuration);
+
+        UriComponents selectByIdUri = UriComponentsBuilder.fromUriString("/configurations/{id}")
+                .buildAndExpand(savedConfiguration.getId());
+
+        ResponseEntity<Configuration> response = restTemplate.getForEntity(selectByIdUri.toUri(), Configuration.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getName()).isEqualTo(configuration.getName());
+        assertThat(response.getBody().getValue()).isEqualTo(configuration.getValue());
     }
 
     @After

@@ -69,4 +69,27 @@ public class ConfigurationServiceTest {
 
         verify(configurationRepository, times(1)).deleteById(anyLong());
     }
+
+    @Test
+    public void whenRetrievingConfigurationById_thenConfigurationIsReturned() {
+        Configuration configuration = new Configuration("server.port", "8080");
+
+        given(configurationRepository.findById(anyLong()))
+                .willReturn(Optional.of(configuration));
+
+        Configuration retrievedConfiguration = configurationService.getConfigurationById(1L);
+
+        assertThat(retrievedConfiguration.getName()).isEqualTo(configuration.getName());
+        assertThat(retrievedConfiguration.getValue()).isEqualTo(configuration.getValue());
+
+    }
+
+    @Test(expected = ConfigurationNotFoundException.class)
+    public void whenRetrievingConfigurationById_thenNotFoundException() {
+        given(configurationRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        configurationService.getConfigurationById(1L);
+
+    }
 }

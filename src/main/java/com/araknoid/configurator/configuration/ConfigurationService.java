@@ -22,4 +22,8 @@ public class ConfigurationService {
     public void deleteConfigurationById(Long configurationId) {
         configurationRepository.deleteById(configurationId);
     }
+
+    public Configuration getConfigurationById(Long configurationId) {
+        return configurationRepository.findById(configurationId).orElseThrow(() -> new ConfigurationNotFoundException());
+    }
 }

@@ -18,6 +18,11 @@ public class ConfigurationController {
         this.configurationService = configurationService;
     }
 
+    @GetMapping("/{id}")
+    private Configuration getConfigurationByName(@PathVariable Long id) {
+        return configurationService.getConfigurationById(id);
+    }
+
     @GetMapping
     private Configuration getConfigurationByName(@RequestParam String name) {
         return configurationService.getConfigurationByName(name);

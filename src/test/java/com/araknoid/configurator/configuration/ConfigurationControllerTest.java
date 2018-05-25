@@ -83,10 +83,24 @@ public class ConfigurationControllerTest {
     }
 
     @Test
-    public void givenConfigurationIdThatDoesNotExists_whenDeletingConfiguration_then() throws Exception {
+    public void givenConfigurationIdThatDoesNotExists_whenDeletingConfiguration_thenConfigurationNotFound() throws Exception {
         doThrow(EntityNotFoundException.class).when(configurationService).deleteConfigurationById(anyLong());
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/configurations/{id}", 1L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenConfigurationId_whenRetrievingConfiguration_thenConfigurationIsReturned() throws Exception {
+        Configuration configuration = new Configuration("server.port", "8080");
+
+        given(configurationService.getConfigurationById(anyLong()))
+                .willReturn(configuration);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/configurations/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").value(configuration.getName()))
+                .andExpect(jsonPath("value").value(configuration.getValue()));
+
     }
 }
