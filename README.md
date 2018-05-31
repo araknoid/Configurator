@@ -1,5 +1,5 @@
 # Configurator
-[![Build Status][badge-travis]][travis] [![codecov][badge-codecov]][codecov] [![Known Vulnerabilities]([badge-snyk])]([snyk])
+[![Build Status][badge-travis]][travis] [![codecov][badge-codecov]][codecov] [![Known Vulnerabilities][badge-snyk]][snyk]
 
 [badge-travis]: https://travis-ci.org/araknoid/Configurator.svg?branch=master
 [travis]: https://travis-ci.org/araknoid/Configurator
