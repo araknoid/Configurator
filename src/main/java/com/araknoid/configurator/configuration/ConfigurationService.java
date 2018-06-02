@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ConfigurationService {
+
     private final ConfigurationRepository configurationRepository;
 
     public ConfigurationService(ConfigurationRepository configurationRepository) {
-
         this.configurationRepository = configurationRepository;
     }
 
@@ -19,11 +19,11 @@ public class ConfigurationService {
         return configurationRepository.save(configuration);
     }
 
-    public void deleteConfigurationById(Long configurationId) {
+    public void deleteConfigurationById(String configurationId) {
         configurationRepository.deleteById(configurationId);
     }
 
-    public Configuration getConfigurationById(Long configurationId) {
+    public Configuration getConfigurationById(String configurationId) {
         return configurationRepository.findById(configurationId).orElseThrow(() -> new ConfigurationNotFoundException());
     }
 }

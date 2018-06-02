@@ -24,10 +24,11 @@ public class ConfigurationRepositoryTest {
     @Test
     public void whenFindingConfigurationByName_thenConfigurationDetailsAreReturned() {
 
-        Configuration savedConfiguration = entityManager.persistAndFlush(new Configuration("server.port", "8080"));
+        Configuration savedConfiguration = entityManager.persistAndFlush(new Configuration("server.port", "Port of a server", "8080"));
 
-        Optional<Configuration> configuration = configurationRepository.findByName("server.port");
+        Optional<Configuration> configuration = configurationRepository.findByName(savedConfiguration.getName());
 
+        assertThat(configuration.get().getId()).isEqualTo(savedConfiguration.getId());
         assertThat(configuration.get().getName()).isEqualTo(savedConfiguration.getName());
         assertThat(configuration.get().getValue()).isEqualTo(savedConfiguration.getValue());
     }

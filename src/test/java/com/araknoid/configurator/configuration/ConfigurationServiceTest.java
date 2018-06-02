@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -21,64 +21,65 @@ public class ConfigurationServiceTest {
 
     private ConfigurationService configurationService;
 
+    private Configuration configuration;
+
     @Before
     public void setUp() {
         configurationService = new ConfigurationService(configurationRepository);
+        configuration = new Configuration("server.port", "Port of the server", "8080");
     }
 
     @Test
     public void whenRetrievingConfiguration_thenConfigurationIsReturned() {
-        given(configurationRepository.findByName("server.port"))
-                .willReturn(Optional.of(new Configuration("server.port", "8080")));
+        given(configurationRepository.findByName(anyString()))
+                .willReturn(Optional.of(configuration));
 
-        Configuration configuration = configurationService.getConfigurationByName("server.port");
+        Configuration retrievedConfiguration = configurationService.getConfigurationByName(configuration.getName());
 
-        assertThat(configuration.getName()).isEqualTo("server.port");
-        assertThat(configuration.getValue()).isEqualTo("8080");
+        assertThat(retrievedConfiguration.getId()).isEqualTo(configuration.getId());
+        assertThat(retrievedConfiguration.getName()).isEqualTo(configuration.getName());
+        assertThat(retrievedConfiguration.getValue()).isEqualTo(configuration.getValue());
     }
 
     @Test(expected = ConfigurationNotFoundException.class)
     public void whenRetrievingConfiguration_thenNotFoundException() {
-        given(configurationRepository.findByName("server.port"))
+        given(configurationRepository.findByName(anyString()))
                 .willReturn(Optional.empty());
 
-        configurationService.getConfigurationByName("server.port");
+        configurationService.getConfigurationByName(configuration.getName());
 
     }
 
     @Test
     public void whenSavingNewConfiguration_thenSavedConfigurationIsReturned() {
-        Configuration configuration = new Configuration("project", "configurator");
-
         given(configurationRepository.save(configuration))
                 .willReturn(configuration);
 
         Configuration savedConfiguration = configurationService.saveConfiguration(configuration);
 
+        assertThat(savedConfiguration.getId()).isEqualTo(configuration.getId());
         assertThat(savedConfiguration.getName()).isEqualTo(configuration.getName());
         assertThat(savedConfiguration.getValue()).isEqualTo(configuration.getValue());
     }
 
     @Test
     public void whenDeletingAConfiguration_thenConfigurationIsDeleted() {
-        doNothing().when(configurationRepository).deleteById(anyLong());
+        doNothing().when(configurationRepository).deleteById(anyString());
 
-        Long configurationId = 1L;
+        configurationService.deleteConfigurationById(configuration.getId());
 
-        configurationService.deleteConfigurationById(configurationId);
-
-        verify(configurationRepository, times(1)).deleteById(anyLong());
+        verify(configurationRepository, times(1)).deleteById(anyString());
     }
 
     @Test
     public void whenRetrievingConfigurationById_thenConfigurationIsReturned() {
-        Configuration configuration = new Configuration("server.port", "8080");
 
-        given(configurationRepository.findById(anyLong()))
+        given(configurationRepository.findById(anyString()))
                 .willReturn(Optional.of(configuration));
 
-        Configuration retrievedConfiguration = configurationService.getConfigurationById(1L);
+        Configuration retrievedConfiguration = configurationService.getConfigurationById(configuration.getId());
 
+        assertThat(retrievedConfiguration.getId()).isEqualTo(configuration.getId());
         assertThat(retrievedConfiguration.getName()).isEqualTo(configuration.getName());
         assertThat(retrievedConfiguration.getValue()).isEqualTo(configuration.getValue());
 
@@ -86,10 +87,10 @@ public class ConfigurationServiceTest {
 
     @Test(expected = ConfigurationNotFoundException.class)
     public void whenRetrievingConfigurationById_thenNotFoundException() {
-        given(configurationRepository.findById(anyLong()))
+        given(configurationRepository.findById(anyString()))
                 .willReturn(Optional.empty());
 
-        configurationService.getConfigurationById(1L);
+        configurationService.getConfigurationById(configuration.getId());
 
     }
 }

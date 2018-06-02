@@ -1,6 +1,7 @@
 package com.araknoid.configurator.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import javax.persistence.EntityNotFoundException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -33,14 +33,21 @@ public class ConfigurationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private Configuration configuration;
+
+    @Before
+    public void setUp() {
+        configuration = new Configuration("server.port", "Port of the server", "8080");
+    }
+
     @Test
     public void whenRetrievingConfiguration_thenItShouldReturnConfigurationNameAndValue() throws Exception {
-        Configuration configuration = new Configuration("server.port", "8080");
         given(configurationService.getConfigurationByName(anyString()))
                 .willReturn(configuration);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/configurations?name=server.port"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(configuration.getId()))
                 .andExpect(jsonPath("name").value(configuration.getName()))
                 .andExpect(jsonPath("value").value(configuration.getValue()));
     }
@@ -56,7 +63,6 @@ public class ConfigurationControllerTest {
 
     @Test
     public void givenNewConfiguration_whenSavingNewConfiguration_thenSavedAndLocationIsReturned() throws Exception {
-        Configuration configuration = new Configuration("project", "configurator");
 
         given(configurationService.saveConfiguration(any(Configuration.class)))
                 .willReturn(configuration);
@@ -74,31 +80,30 @@ public class ConfigurationControllerTest {
     @Test
     public void givenConfigurationId_whenDeletingConfiguration_thenDeleted() throws Exception {
 
-        doNothing().when(configurationService).deleteConfigurationById(anyLong());
+        doNothing().when(configurationService).deleteConfigurationById(anyString());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/configurations/{id}", 1L))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/configurations/{id}", configuration.getId()))
                 .andExpect(status().isNoContent());
 
-        verify(configurationService, times(1)).deleteConfigurationById(anyLong());
+        verify(configurationService, times(1)).deleteConfigurationById(anyString());
     }
 
     @Test
     public void givenConfigurationIdThatDoesNotExists_whenDeletingConfiguration_thenConfigurationNotFound() throws Exception {
-        doThrow(EntityNotFoundException.class).when(configurationService).deleteConfigurationById(anyLong());
+        doThrow(EntityNotFoundException.class).when(configurationService).deleteConfigurationById(anyString());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/configurations/{id}", 1L))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/configurations/{id}", configuration.getId()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void givenConfigurationId_whenRetrievingConfiguration_thenConfigurationIsReturned() throws Exception {
-        Configuration configuration = new Configuration("server.port", "8080");
-
-        given(configurationService.getConfigurationById(anyLong()))
+        given(configurationService.getConfigurationById(anyString()))
                 .willReturn(configuration);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/configurations/{id}", 1L))
+        mockMvc.perform(MockMvcRequestBuilders.get("/configurations/{id}", configuration.getId()))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(configuration.getId()))
                 .andExpect(jsonPath("name").value(configuration.getName()))
                 .andExpect(jsonPath("value").value(configuration.getValue()));
 

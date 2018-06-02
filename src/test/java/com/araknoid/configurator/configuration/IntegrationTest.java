@@ -1,6 +1,7 @@
 package com.araknoid.configurator.configuration;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,21 +27,29 @@ public class IntegrationTest {
     @Autowired
     private ConfigurationRepository configurationRepository;
 
+    private Configuration configuration;
+
+    @Before
+    public void setUp() {
+        configuration = new Configuration("server.port", "Port of the server", "8080");
+    }
+
     @Test
     public void whenRetrievingConfiguration_thenItShouldReturnConfigurationNameAndValue() {
-        Configuration configuration = new Configuration("server.port", "8080");
+
         configurationRepository.save(configuration);
 
-        ResponseEntity<Configuration> response = restTemplate.getForEntity("/configurations?name={name}", Configuration.class, "server.port");
+        ResponseEntity<Configuration> response = restTemplate.getForEntity("/configurations?name={name}", Configuration.class, configuration.getName());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getId()).isEqualTo(configuration.getId());
         assertThat(response.getBody().getName()).isEqualTo(configuration.getName());
         assertThat(response.getBody().getValue()).isEqualTo(configuration.getValue());
     }
 
     @Test
     public void givenConfiguration_whenSavingNewConfiguration_thenSaved() {
-        ResponseEntity<Configuration> postResponse = restTemplate.postForEntity("/configurations", new Configuration("project", "configurator"), Configuration.class);
+        ResponseEntity<Configuration> postResponse = restTemplate.postForEntity("/configurations", configuration, Configuration.class);
 
         assertThat(postResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(postResponse.getHeaders().getLocation()).isNotNull();
@@ -48,7 +57,6 @@ public class IntegrationTest {
 
     @Test
     public void givenConfiguration_whenDeletingConfiguration_thenDeleted() {
-        Configuration configuration = new Configuration("server.port", "8080");
         Configuration savedConfiguration = configurationRepository.save(configuration);
 
         UriComponents deleteURI = UriComponentsBuilder.fromUriString("/configurations/{id}")
@@ -63,7 +71,6 @@ public class IntegrationTest {
 
     @Test
     public void whenRetrievingConfigurationByID_thenItShouldReturnConfigurationNameAndValue() {
-        Configuration configuration = new Configuration("server.name", "localhost");
         Configuration savedConfiguration = configurationRepository.save(configuration);
 
         UriComponents selectByIdUri = UriComponentsBuilder.fromUriString("/configurations/{id}")
@@ -72,6 +79,7 @@ public class IntegrationTest {
         ResponseEntity<Configuration> response = restTemplate.getForEntity(selectByIdUri.toUri(), Configuration.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getId()).isEqualTo(configuration.getId());
         assertThat(response.getBody().getName()).isEqualTo(configuration.getName());
         assertThat(response.getBody().getValue()).isEqualTo(configuration.getValue());
     }

@@ -2,34 +2,32 @@ package com.araknoid.configurator.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class Configuration {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
 
     @Column(unique = true)
     private String name;
 
     private String value;
 
-    public Configuration() {
-    }
+    public Configuration(){}
 
-    public Configuration(String name, String value) {
+    public Configuration(String id, String name, String value) {
+        this.id = id;
         this.name = name;
         this.value = value;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

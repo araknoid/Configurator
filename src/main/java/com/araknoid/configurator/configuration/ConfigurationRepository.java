@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ConfigurationRepository extends CrudRepository<Configuration, Long> {
+public interface ConfigurationRepository extends CrudRepository<Configuration, String> {
 
     Optional<Configuration> findByName(String name);
 }

@@ -19,7 +19,7 @@ public class ConfigurationController {
     }
 
     @GetMapping("/{id}")
-    private Configuration getConfigurationByName(@PathVariable Long id) {
+    private Configuration getConfigurationById(@PathVariable String id) {
         return configurationService.getConfigurationById(id);
     }
 
@@ -41,7 +41,7 @@ public class ConfigurationController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity deleteConfiguration(@PathVariable Long id) {
+    private ResponseEntity deleteConfiguration(@PathVariable String id) {
         try {
             configurationService.deleteConfigurationById(id);
             return ResponseEntity.noContent().build();
