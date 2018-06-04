@@ -108,4 +108,22 @@ public class ConfigurationControllerTest {
                 .andExpect(jsonPath("value").value(configuration.getValue()));
 
     }
+
+    @Test
+    public void givenConfigurationIdAndConfiguration_whenUpdatingConfiguration_thenConfigurationUpdated() throws Exception {
+        Configuration updatedConfiguration = new Configuration(configuration.getId(), "Default port", "8090");
+        given(configurationService.updatedConfiguration(any(Configuration.class)))
+                .willReturn(updatedConfiguration);
+
+        String jsonBody = objectMapper.writeValueAsString(configuration);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/configurations/{id}", configuration.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(updatedConfiguration.getId()))
+                .andExpect(jsonPath("name").value(updatedConfiguration.getName()))
+                .andExpect(jsonPath("value").value(updatedConfiguration.getValue()));
+    }
 }

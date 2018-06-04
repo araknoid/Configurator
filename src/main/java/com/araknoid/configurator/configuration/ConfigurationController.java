@@ -50,6 +50,12 @@ public class ConfigurationController {
         }
     }
 
+    @PutMapping("/{id}")
+    private ResponseEntity<Configuration> putConfiguration(@PathVariable String id, @RequestBody Configuration configuration) {
+        Configuration updatedConfiguration = configurationService.updatedConfiguration(configuration);
+        return ResponseEntity.ok(updatedConfiguration);
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private void configurationNotFoundHandler(ConfigurationNotFoundException ex) {

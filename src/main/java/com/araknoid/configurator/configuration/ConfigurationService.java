@@ -26,4 +26,8 @@ public class ConfigurationService {
     public Configuration getConfigurationById(String configurationId) {
         return configurationRepository.findById(configurationId).orElseThrow(() -> new ConfigurationNotFoundException());
     }
+
+    public Configuration updatedConfiguration(Configuration configuration) {
+        return configurationRepository.save(configuration);
+    }
 }

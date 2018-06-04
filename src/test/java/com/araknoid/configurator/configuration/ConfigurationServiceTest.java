@@ -82,7 +82,19 @@ public class ConfigurationServiceTest {
         assertThat(retrievedConfiguration.getId()).isEqualTo(configuration.getId());
         assertThat(retrievedConfiguration.getName()).isEqualTo(configuration.getName());
         assertThat(retrievedConfiguration.getValue()).isEqualTo(configuration.getValue());
+    }
 
+    @Test
+    public void whenUpdatingConfiguration_thenUpdatedConfigurationIsReturned() {
+
+        given(configurationRepository.save(any(Configuration.class)))
+                .willReturn(configuration);
+
+        Configuration updatedConfiguration = configurationService.updatedConfiguration(configuration);
+
+        assertThat(updatedConfiguration.getId()).isEqualTo(configuration.getId());
+        assertThat(updatedConfiguration.getName()).isEqualTo(configuration.getName());
+        assertThat(updatedConfiguration.getValue()).isEqualTo(configuration.getValue());
     }
 
     @Test(expected = ConfigurationNotFoundException.class)

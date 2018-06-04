@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -82,6 +84,24 @@ public class IntegrationTest {
         assertThat(response.getBody().getId()).isEqualTo(configuration.getId());
         assertThat(response.getBody().getName()).isEqualTo(configuration.getName());
         assertThat(response.getBody().getValue()).isEqualTo(configuration.getValue());
+    }
+
+    @Test
+    public void whenUpdatingConfiguration_thenConfigurationIsUpdated() {
+        Configuration savedConfiguration = configurationRepository.save(configuration);
+
+        UriComponents putUri = UriComponentsBuilder.fromUriString("/configurations/{id}")
+                .buildAndExpand(savedConfiguration.getId());
+
+        Configuration newConfiguration = new Configuration(savedConfiguration.getId(), "Default port", "8090");
+
+        restTemplate.put(putUri.toUri(), newConfiguration);
+
+        Optional<Configuration> updatedConfiguration = configurationRepository.findById(newConfiguration.getId());
+
+        assertThat(updatedConfiguration.get().getId()).isEqualTo(newConfiguration.getId());
+        assertThat(updatedConfiguration.get().getName()).isEqualTo(newConfiguration.getName());
+        assertThat(updatedConfiguration.get().getValue()).isEqualTo(newConfiguration.getValue());
     }
 
     @After
