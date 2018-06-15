@@ -7,3 +7,22 @@
 [codecov]:https://codecov.io/gh/araknoid/Configurator
 [badge-snyk]:https://snyk.io/test/github/araknoid/Configurator/badge.svg
 [snyk]:https://snyk.io/test/github/araknoid/Configurator
+
+HTTP API for managing the configuration values of a system
+
+#### Configuration
+
+The configuration is composed by three attributes:
+* *id*: Unique identifier of the configuration
+* *name*: Description of the configuration
+* *value*: Value of the configuration
+
+Example of configuration:
+
+```
+{  
+    "id": "server.port",  
+    "name": "Configuration for server port",  
+    "value": "8080"  
+}
+```
